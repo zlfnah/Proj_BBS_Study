@@ -1,0 +1,64 @@
+package dbcp_Drill;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Vector;
+
+public class RegisterMgr {
+	
+private DBConnectionMgr pool = null;
+
+public RegisterMgr() {
+	
+	try {
+		pool=DBConnectionMgr.getInstance(); //dbcp객체 사용~!
+		
+	}catch(Exception e) {
+		System.out.println("error: 커넥션 얻어오기 실패!"+e.getMessage());
+	}
+}//RegisterMgr()
+
+public Vector getMemberList() {
+	Connection objConn=null;
+	Statement objStmt = null;
+	ResultSet objRs = null;
+	Vector vecList = new Vector();
+	
+	try {
+		objConn=pool.getConnection();
+		String sql="select * from tblRegister";
+		objStmt =objConn.createStatement();
+		objRs=objStmt.executeQuery(sql);
+		
+		while(objRs.next()) {
+			RegisterBean regBean = new RegisterBean();
+			
+			regBean.setNum(objRs.getInt("num"));
+			regBean.setUid(objRs.getString("uid"));
+			regBean.setUpw(objRs.getString("upw"));
+			regBean.setuName(objRs.getString("uName"));
+			regBean.setNum1(objRs.getString("num1"));
+			regBean.setNum2(objRs.getString("num2"));
+			regBean.setuEmail(objRs.getString("uEmail"));
+			regBean.setuPhone(objRs.getString("uPhone"));
+			regBean.setZipcode(objRs.getString("zipcode"));
+			regBean.setAddress(objRs.getString("address"));
+			regBean.setJob(objRs.getString("job"));
+			
+			vecList.add(regBean);
+			
+		}
+	} catch(Exception e) {
+		
+		System.out.println("db접속 오류"+e.getMessage());
+		
+	}finally{
+		pool.freeConnection(objConn);
+		
+	}
+	return vecList;
+}
+
+
+}
